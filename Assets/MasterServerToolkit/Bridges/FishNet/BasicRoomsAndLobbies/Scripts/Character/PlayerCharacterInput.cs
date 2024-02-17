@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 using UnityEngine;
 
 namespace MasterServerToolkit.Bridges.FishNetworking.Character
@@ -90,4 +90,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking.Character
         }
     }
 }
-#endif

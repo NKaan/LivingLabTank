@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 
 namespace MasterServerToolkit.Bridges.FishNetworking.Character
 {
@@ -26,4 +26,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking.Character
         //protected virtual void OnDestroy() { }
     }
 }
-#endif

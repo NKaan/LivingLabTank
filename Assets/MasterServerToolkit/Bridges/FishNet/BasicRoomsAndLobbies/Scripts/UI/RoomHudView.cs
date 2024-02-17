@@ -1,4 +1,4 @@
-#if FISHNET
+
 using MasterServerToolkit.UI;
 
 namespace MasterServerToolkit.Bridges.FishNetworking
@@ -11,4 +11,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking
         }
     }
 }
-#endif

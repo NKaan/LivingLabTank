@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 using FishNet.Object;
 using MasterServerToolkit.Logging;
 using MasterServerToolkit.MasterServer;
@@ -35,4 +35,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking.Character
         }
     }
 }
-#endif

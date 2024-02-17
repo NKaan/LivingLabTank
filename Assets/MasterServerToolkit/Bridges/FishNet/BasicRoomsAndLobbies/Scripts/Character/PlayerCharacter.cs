@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 using System;
 
 namespace MasterServerToolkit.Bridges.FishNetworking.Character
@@ -39,4 +39,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking.Character
         #endregion
     }
 }
-#endif

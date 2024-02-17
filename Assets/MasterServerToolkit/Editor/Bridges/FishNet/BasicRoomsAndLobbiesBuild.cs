@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 using MasterServerToolkit.Utils.Editor;
 using System.IO;
 using UnityEditor;
@@ -198,4 +198,3 @@ namespace MasterServerToolkit.MasterServer.Examples.FishNetworking
         }
     }
 }
-#endif

@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
@@ -207,4 +207,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking.Character
         }
     }
 }
-#endif

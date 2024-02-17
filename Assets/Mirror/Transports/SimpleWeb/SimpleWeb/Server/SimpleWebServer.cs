@@ -108,7 +108,9 @@ namespace Mirror.SimpleWeb
 
             if (server.receiveQueue.Count > 0)
             {
-                Log.Warn($"[SWT-SimpleWebServer]: ProcessMessageQueue has {server.receiveQueue.Count} remaining.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"SimpleWebServer ProcessMessageQueue has {server.receiveQueue.Count} remaining.");
+                Console.ResetColor();
             }
         }
     }

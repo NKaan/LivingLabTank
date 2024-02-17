@@ -59,7 +59,6 @@ namespace Mirror
         Move,              // rigidbody.MovePosition/Rotation
     }
 
-    [Obsolete("Prediction is under development, do not use this yet.")]
     [RequireComponent(typeof(Rigidbody))]
     public class PredictedRigidbody : NetworkBehaviour
     {
@@ -85,109 +84,13 @@ namespace Mirror
         [Tooltip("Configure how to apply the corrected state.")]
         public CorrectionMode correctionMode = CorrectionMode.Move;
 
-        [Header("Visual Interpolation")]
-        [Tooltip("After creating the visual interpolation object, keep showing the original Rigidbody with a ghost (transparent) material for debugging.")]
-        public bool showGhost = true;
-        public float ghostDistanceThreshold = 0.1f;
-
-        [Tooltip("After creating the visual interpolation object, replace this object's renderer materials with the ghost (ideally transparent) material.")]
-        public Material ghostMaterial;
-
-        [Tooltip("How fast to interpolate to the target position, relative to how far we are away from it.\nHigher value will be more jitter but sharper moves, lower value will be less jitter but a little too smooth / rounded moves.")]
-        public float positionInterpolationSpeed = 15; // 10 is a little too low for billiards at least
-        public float rotationInterpolationSpeed = 10;
-
-        [Tooltip("Teleport if we are further than 'multiplier x collider size' behind.")]
-        public float teleportDistanceMultiplier = 10;
-
         [Header("Debugging")]
         public float lineTime = 10;
-
-        // visually interpolated GameObject copy for smoothing
-        protected GameObject visualCopy;
 
         void Awake()
         {
             rb = GetComponent<Rigidbody>();
         }
-
-        // instantiate a visually-only copy of the gameobject to apply smoothing.
-        // on clients, where players are watching.
-        // create & destroy methods are virtual so games with a different
-        // rendering setup / hierarchy can inject their own copying code here.
-        protected virtual void CreateVisualCopy()
-        {
-            // create an empty GameObject with the same name + _Visual
-            visualCopy = new GameObject($"{name}_Visual");
-            visualCopy.transform.position = transform.position;
-            visualCopy.transform.rotation = transform.rotation;
-            visualCopy.transform.localScale = transform.localScale;
-
-            // add the PredictedRigidbodyVisual component
-            PredictedRigidbodyVisual visualRigidbody = visualCopy.AddComponent<PredictedRigidbodyVisual>();
-            visualRigidbody.target = this;
-            visualRigidbody.positionInterpolationSpeed = positionInterpolationSpeed;
-            visualRigidbody.rotationInterpolationSpeed = rotationInterpolationSpeed;
-            visualRigidbody.teleportDistanceMultiplier = teleportDistanceMultiplier;
-
-            // copy the rendering components
-            if (TryGetComponent(out MeshRenderer originalMeshRenderer))
-            {
-                MeshFilter meshFilter = visualCopy.AddComponent<MeshFilter>();
-                meshFilter.mesh = GetComponent<MeshFilter>().mesh;
-
-                MeshRenderer meshRenderer = visualCopy.AddComponent<MeshRenderer>();
-                meshRenderer.material = originalMeshRenderer.material;
-
-                // renderers often have multiple materials. copy all.
-                if (originalMeshRenderer.materials != null)
-                {
-                    Material[] materials = new Material[originalMeshRenderer.materials.Length];
-                    for (int i = 0; i < materials.Length; ++i)
-                    {
-                        materials[i] = originalMeshRenderer.materials[i];
-                    }
-                    meshRenderer.materials = materials; // need to reassign to see it in effect
-                }
-            }
-            // if we didn't find a renderer, show a warning
-            else Debug.LogWarning($"PredictedRigidbody: {name} found no renderer to copy onto the visual object. If you are using a custom setup, please overwrite PredictedRigidbody.CreateVisualCopy().");
-
-            // replace this renderer's materials with the ghost (if enabled)
-            foreach (Renderer rend in GetComponentsInChildren<Renderer>())
-            {
-                if (showGhost)
-                {
-                    // renderers often have multiple materials. replace all.
-                    if (rend.materials != null)
-                    {
-                        Material[] materials = rend.materials;
-                        for (int i = 0; i < materials.Length; ++i)
-                        {
-                            materials[i] = ghostMaterial;
-                        }
-                        rend.materials = materials; // need to reassign to see it in effect
-                    }
-                }
-                else
-                {
-                    rend.enabled = false;
-                }
-
-            }
-        }
-
-        protected virtual void DestroyVisualCopy()
-        {
-            if (visualCopy != null) Destroy(visualCopy);
-        }
-
-        // creater visual copy only on clients, where players are watching.
-        public override void OnStartClient() => CreateVisualCopy();
-
-        // destroy visual copy only in OnStopClient().
-        // OnDestroy() wouldn't be called for scene objects that are only disabled instead of destroyed.
-        public override void OnStopClient() => DestroyVisualCopy();
 
         void UpdateServer()
         {
@@ -205,23 +108,9 @@ namespace Mirror
             SetDirty();
         }
 
-        void UpdateClient()
-        {
-            // only show ghost while interpolating towards the object.
-            // if we are 'inside' the object then don't show ghost.
-            // otherwise it just looks like z-fighting the whole time.
-            // TODO optimize this later
-            bool insideTarget = Vector3.Distance(transform.position, visualCopy.transform.position) <= ghostDistanceThreshold;
-            foreach (MeshRenderer rend in GetComponentsInChildren<MeshRenderer>())
-            {
-                rend.enabled = !insideTarget;
-            }
-        }
-
         void Update()
         {
             if (isServer) UpdateServer();
-            if (isClient) UpdateClient();
         }
 
         void FixedUpdate()
@@ -489,14 +378,6 @@ namespace Mirror
 
             // compare state without deltas
             CompareState(timestamp, new RigidbodyState(timestamp, Vector3.zero, position, rotation, Vector3.zero, velocity));
-        }
-
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            // force syncDirection to be ServerToClient
-            syncDirection = SyncDirection.ServerToClient;
         }
     }
 }

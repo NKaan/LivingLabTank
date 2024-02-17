@@ -26,9 +26,6 @@ namespace Mirror.Weaver
         List<FieldDefinition> syncObjects = new List<FieldDefinition>();
         // <SyncVarField,NetIdField>
         Dictionary<FieldDefinition, FieldDefinition> syncVarNetIds = new Dictionary<FieldDefinition, FieldDefinition>();
-        // <SyncVarHookDelegateField, (FieldDefinition, MethodDefinition)> - Every syncvar with a hook has a new field created to store the Action<T,T> delegate so we don't allocate on every hook invocation
-        // This dictionary maps each syncvar field to the field that will store the hook method delegate instance, and the method from which the delegate instance is constructed from
-        Dictionary<FieldDefinition, (FieldDefinition hookDelegateField, MethodDefinition hookMethod)> syncVarHookDelegates = new Dictionary<FieldDefinition, (FieldDefinition hookDelegateField, MethodDefinition hookMethod)>();
         readonly List<CmdResult> commands = new List<CmdResult>();
         readonly List<ClientRpcResult> clientRpcs = new List<ClientRpcResult>();
         readonly List<MethodDefinition> targetRpcs = new List<MethodDefinition>();
@@ -74,7 +71,7 @@ namespace Mirror.Weaver
             MarkAsProcessed(netBehaviourSubclass);
 
             // deconstruct tuple and set fields
-            (syncVars, syncVarNetIds, syncVarHookDelegates) = syncVarAttributeProcessor.ProcessSyncVars(netBehaviourSubclass, ref WeavingFailed);
+            (syncVars, syncVarNetIds) = syncVarAttributeProcessor.ProcessSyncVars(netBehaviourSubclass, ref WeavingFailed);
 
             syncObjects = SyncObjectProcessor.FindSyncObjectsFields(writers, readers, Log, netBehaviourSubclass, ref WeavingFailed);
 
@@ -324,7 +321,7 @@ namespace Mirror.Weaver
         // we need to inject several initializations into NetworkBehaviour ctor
         void InjectIntoInstanceConstructor(ref bool WeavingFailed)
         {
-            if ((syncObjects.Count == 0) && (syncVarHookDelegates.Count == 0))
+            if (syncObjects.Count == 0)
                 return;
 
             // find instance constructor
@@ -350,14 +347,6 @@ namespace Mirror.Weaver
             foreach (FieldDefinition fd in syncObjects)
             {
                 SyncObjectInitializer.GenerateSyncObjectInitializer(ctorWorker, weaverTypes, fd);
-            }
-
-            // initialize all delegate fields in ctor
-            foreach(KeyValuePair<FieldDefinition, (FieldDefinition, MethodDefinition)> entry in syncVarHookDelegates)
-            {
-                FieldDefinition syncVarField = entry.Key;
-                (FieldDefinition hookDelegate, MethodDefinition hookMethod) = entry.Value;
-                syncVarAttributeProcessor.GenerateSyncVarHookDelegateInitializer(ctorWorker, syncVarField, hookDelegate, hookMethod);
             }
 
             // add final 'Ret' instruction to ctor
@@ -593,18 +582,15 @@ namespace Mirror.Weaver
                 worker.Emit(OpCodes.Ldflda, syncVar);
             }
 
-            // If a hook exists, then we need to load the hook delegate on the stack
-            // The hook delegate is created once in the constructor and stored in an instance field
-            // We load the delegate from this instance field to avoid instantiating a new delegate instance every time (drastically reduces allocations)
-            if(syncVarHookDelegates.TryGetValue(syncVar, out (FieldDefinition hookDelegateField, MethodDefinition) value))
+            // hook? then push 'new Action<T,T>(Hook)' onto stack
+            MethodDefinition hookMethod = syncVarAttributeProcessor.GetHookMethod(netBehaviourSubclass, syncVar, ref WeavingFailed);
+            if (hookMethod != null)
             {
-                // A hook exists. Push this.hookDelegateField onto the stack
-                worker.Emit(OpCodes.Ldarg_0);
-                worker.Emit(OpCodes.Ldfld, value.hookDelegateField);
+                syncVarAttributeProcessor.GenerateNewActionFromHookMethod(syncVar, worker, hookMethod);
             }
+            // otherwise push 'null' as hook
             else
             {
-                // No hook exists. Push 'null' as hook
                 worker.Emit(OpCodes.Ldnull);
             }
 

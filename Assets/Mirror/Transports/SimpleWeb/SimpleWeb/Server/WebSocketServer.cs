@@ -37,7 +37,9 @@ namespace Mirror.SimpleWeb
             listener = TcpListener.Create(port);
             listener.Start();
 
-            Log.Verbose($"[SWT-WebSocketServer]: Server Started on {port}");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"[SimpleWebTransport] Server Started on {port}!");
+            Console.ResetColor();
 
             acceptThread = new Thread(acceptLoop);
             acceptThread.IsBackground = true;
@@ -53,7 +55,7 @@ namespace Mirror.SimpleWeb
             listener?.Stop();
             acceptThread = null;
 
-            Log.Verbose($"[SWT-WebSocketServer]: Server stopped...closing all connections.");
+            Console.WriteLine($"[SimpleWebTransport] Server stopped...closing all connections.");
 
             // make copy so that foreach doesn't break if values are removed
             Connection[] connectionsCopy = connections.Values.ToArray();
@@ -78,7 +80,7 @@ namespace Mirror.SimpleWeb
                         //      this might not be a problem as HandshakeAndReceiveLoop checks for stop
                         //      and returns/disposes before sending message to queue
                         Connection conn = new Connection(client, AfterConnectionDisposed);
-                        Log.Verbose($"[SWT-WebSocketServer]: A client connected from {conn}");
+                        Console.WriteLine($"[SimpleWebTransport] A client connected {conn}", false);
 
                         // handshake needs its own thread as it needs to wait for message from client
                         Thread receiveThread = new Thread(() => HandshakeAndReceiveLoop(conn));
@@ -108,7 +110,9 @@ namespace Mirror.SimpleWeb
                 bool success = sslHelper.TryCreateStream(conn);
                 if (!success)
                 {
-                    Log.Warn($"[SWT-WebSocketServer]: Failed to create SSL Stream {conn}");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[SimpleWebTransport] Failed to create SSL Stream {conn}");
+                    Console.ResetColor();
                     conn.Dispose();
                     return;
                 }
@@ -116,10 +120,12 @@ namespace Mirror.SimpleWeb
                 success = handShake.TryHandshake(conn);
 
                 if (success)
-                    Log.Verbose($"[SWT-WebSocketServer]: Sent Handshake {conn}, false");
+                    Console.WriteLine($"[SimpleWebTransport] Sent Handshake {conn}, false");
                 else
                 {
-                    Log.Warn($"[SWT-WebSocketServer]: Handshake Failed {conn}");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[SimpleWebTransport] Handshake Failed {conn}");
+                    Console.ResetColor();
                     conn.Dispose();
                     return;
                 }
@@ -127,7 +133,7 @@ namespace Mirror.SimpleWeb
                 // check if Stop has been called since accepting this client
                 if (serverStopped)
                 {
-                    Log.Warn("[SWT-WebSocketServer]: Server stopped after successful handshake");
+                    Console.WriteLine("[SimpleWebTransport] Server stops after successful handshake", false);
                     return;
                 }
 
@@ -162,15 +168,21 @@ namespace Mirror.SimpleWeb
             }
             catch (ThreadInterruptedException e)
             {
-                Log.Error($"[SWT-WebSocketServer]: Handshake ThreadInterruptedException {e.Message}");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[SimpleWebTransport] Handshake ThreadInterruptedException {e.Message}");
+                Console.ResetColor();
             }
             catch (ThreadAbortException e)
             {
-                Log.Error($"[SWT-WebSocketServer]: Handshake ThreadAbortException {e.Message}");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[SimpleWebTransport] Handshake ThreadAbortException {e.Message}");
+                Console.ResetColor();
             }
             catch (Exception e)
             {
-                Log.Error($"[SWT-WebSocketServer]: Handshake Exception {e.Message}");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[SimpleWebTransport] Handshake Exception {e.Message}");
+                Console.ResetColor();
             }
             finally
             {
@@ -196,20 +208,29 @@ namespace Mirror.SimpleWeb
                 conn.sendPending.Set();
             }
             else
-                Log.Warn($"[SWT-WebSocketServer]: Cannot send message to {id} because connection was not found in dictionary. Maybe it disconnected.");
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"[SimpleWebTransport] Cannot send message to {id} because connection was not found in dictionary. Maybe it disconnected.");
+                Console.ResetColor();
+            }
         }
 
         public bool CloseConnection(int id)
         {
             if (connections.TryGetValue(id, out Connection conn))
             {
-                Log.Info($"[SWT-WebSocketServer]: Disconnecting connection {id}");
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine($"[SimpleWebTransport] Kicking connection {id}");
+                Console.ResetColor();
                 conn.Dispose();
                 return true;
             }
             else
             {
-                Log.Warn($"[SWT-WebSocketServer]: Failed to kick {id} because id not found.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"[SimpleWebTransport] Failed to kick {id} because id not found.");
+                Console.ResetColor();
+
                 return false;
             }
         }
@@ -218,7 +239,9 @@ namespace Mirror.SimpleWeb
         {
             if (!connections.TryGetValue(id, out Connection conn))
             {
-                Log.Warn($"[SWT-WebSocketServer]: Cannot get address of connection {id} because connection was not found in dictionary.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"[SimpleWebTransport] Cannot get address of connection {id} because connection was not found in dictionary.");
+                Console.ResetColor();
                 return null;
             }
 
@@ -229,7 +252,9 @@ namespace Mirror.SimpleWeb
         {
             if (!connections.TryGetValue(id, out Connection conn))
             {
-                Log.Warn($"[SWT-WebSocketServer]: Cannot get request of connection {id} because connection was not found in dictionary.");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"[SimpleWebTransport] Cannot get request of connection {id} because connection was not found in dictionary.");
+                Console.ResetColor();
                 return null;
             }
 

@@ -71,7 +71,7 @@ namespace Mirror.SimpleWeb
                             // check if connected before sending message
                             if (!client.Connected)
                             {
-                                Log.Verbose($"[SWT-SendLoop]: SendLoop {conn} not connected");
+                                Log.Info($"[SimpleWebTransport] SendLoop {conn} not connected");
                                 msg.Release();
                                 return;
                             }
@@ -101,7 +101,7 @@ namespace Mirror.SimpleWeb
                             // check if connected before sending message
                             if (!client.Connected)
                             {
-                                Log.Verbose($"[SWT-SendLoop]: SendLoop {conn} not connected");
+                                Log.Info($"[SimpleWebTransport] SendLoop {conn} not connected");
                                 msg.Release();
                                 return;
                             }
@@ -113,7 +113,7 @@ namespace Mirror.SimpleWeb
                     }
                 }
 
-                Log.Verbose($"[SWT-SendLoop]: {conn} Not Connected");
+                Log.Info($"[SimpleWebTransport] {conn} Not Connected");
             }
             catch (ThreadInterruptedException e) { Log.InfoException(e); }
             catch (ThreadAbortException e) { Log.InfoException(e); }
@@ -144,7 +144,7 @@ namespace Mirror.SimpleWeb
             offset += msgLength;
 
             // dump before mask on
-            Log.DumpBuffer("[SWT-SendLoop]: Send", buffer, startOffset, offset);
+            Log.DumpBuffer("[SimpleWebTransport] Send", buffer, startOffset, offset);
 
             if (setMask)
             {

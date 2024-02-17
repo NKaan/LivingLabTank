@@ -1,4 +1,4 @@
-﻿#if FISHNET
+﻿
 using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Managing.Transporting;
@@ -177,4 +177,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking
         }
     }
 }
-#endif

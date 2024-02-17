@@ -6,17 +6,11 @@ namespace Mirror
 {
     public enum ConnectionQuality : byte
     {
-        ESTIMATING, // still estimating
-        POOR,       // unplayable
-        FAIR,       // very noticeable latency, not very enjoyable anymore
+        EXCELLENT,  // ideal experience for high level competitors
         GOOD,       // very playable for everyone but high level competitors
-        EXCELLENT   // ideal experience for high level competitors
-    }
-
-    public enum ConnectionQualityMethod : byte
-    {
-        Simple,     // simple estimation based on rtt and jitter
-        Pragmatic   // based on snapshot interpolation adjustment
+        FAIR,       // very noticeable latency, not very enjoyable anymore
+        POOR,       // unplayable
+        ESTIMATING, // still estimating
     }
 
     // provide different heuristics for users to choose from.
@@ -29,11 +23,11 @@ namespace Mirror
         {
             switch (quality)
             {
+                case ConnectionQuality.EXCELLENT:  return Color.green;
+                case ConnectionQuality.GOOD:       return Color.yellow;
+                case ConnectionQuality.FAIR:       return new Color(1.0f, 0.647f, 0.0f);
                 case ConnectionQuality.POOR:       return Color.red;
-                case ConnectionQuality.FAIR: return new Color(1.0f, 0.647f, 0.0f);
-                case ConnectionQuality.GOOD: return Color.yellow;
-                case ConnectionQuality.EXCELLENT: return Color.green;
-                default: return Color.gray;  // ESTIMATING
+                default:                           return Color.gray;
             }
         }
 

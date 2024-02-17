@@ -1,4 +1,4 @@
-#if FISHNET
+
 using FishNet;
 using FishNet.Managing;
 using FishNet.Managing.Client;
@@ -169,5 +169,3 @@ namespace MasterServerToolkit.Bridges.FishNetworking
         }
     }
 }
-
-#endif

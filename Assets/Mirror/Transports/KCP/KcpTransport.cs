@@ -1,4 +1,4 @@
-// <- commented out because MIRROR isn't defined on first import yet
+//#if MIRROR <- commented out because MIRROR isn't defined on first import yet
 using System;
 using System.Linq;
 using System.Net;
@@ -133,7 +133,7 @@ namespace kcp2k
             if (statisticsLog)
                 InvokeRepeating(nameof(OnLogStatistics), 1, 1);
 
-            Log.Info("KcpTransport initialized!");
+            Debug.Log("KcpTransport initialized!");
         }
 
         protected virtual void OnValidate()
@@ -145,14 +145,8 @@ namespace kcp2k
         }
 
         // all except WebGL
-        // Do not change this back to using Application.platform
-        // because that doesn't work in the Editor!
         public override bool Available() =>
-#if UNITY_WEBGL
-            false;
-#else
-            true;
-#endif
+            Application.platform != RuntimePlatform.WebGLPlayer;
 
         // client
         public override bool ClientConnected() => client.connected;
@@ -350,7 +344,7 @@ namespace kcp2k
                 log += $"  ReceiveQueue: {GetTotalReceiveQueue()}\n";
                 log += $"  SendBuffer: {GetTotalSendBuffer()}\n";
                 log += $"  ReceiveBuffer: {GetTotalReceiveBuffer()}\n\n";
-                Log.Info(log);
+                Debug.Log(log);
             }
 
             if (ClientConnected())
@@ -362,11 +356,11 @@ namespace kcp2k
                 log += $"  ReceiveQueue: {client.ReceiveQueueCount}\n";
                 log += $"  SendBuffer: {client.SendBufferCount}\n";
                 log += $"  ReceiveBuffer: {client.ReceiveBufferCount}\n\n";
-                Log.Info(log);
+                Debug.Log(log);
             }
         }
 
-        public override string ToString() => $"KCP {port}";
+        public override string ToString() => "KCP";
     }
 }
 //#endif MIRROR <- commented out because MIRROR isn't defined on first import yet
