@@ -189,7 +189,7 @@ namespace MasterServerToolkit.MasterServer
             RoomName = AsString(Names.RoomName);
             RoomIp = AsString(Names.RoomIp, "127.0.0.1");
             RoomPort = (ushort)AsInt(Names.RoomPort, 7777);
-            RoomDefaultPort = AsInt(Names.RoomDefaultPort, 1500);
+            RoomDefaultPort = AsInt(Names.RoomDefaultPort, 1501);
             RoomExecutablePath = AsString(Names.RoomExecutablePath);
             RoomRegion = AsString(Names.RoomRegion);
             RoomMaxConnections = (ushort)AsInt(Names.RoomMaxConnections, 10);
