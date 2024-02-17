@@ -1,7 +1,7 @@
 // Threaded version of our KCP transport.
 // Elevates a few milliseconds of transport computations into a worker thread.
 //
-//#if MIRROR <- commented out because MIRROR isn't defined on first import yet
+// <- commented out because MIRROR isn't defined on first import yet
 using System;
 using System.Linq;
 using System.Net;

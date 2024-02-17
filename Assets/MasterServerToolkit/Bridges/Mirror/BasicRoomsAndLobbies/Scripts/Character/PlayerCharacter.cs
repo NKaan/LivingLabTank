@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 using System;
 
 namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
@@ -43,4 +43,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
         #endregion
     }
 }
-#endif

@@ -1,4 +1,4 @@
-#if MIRROR
+
 using MasterServerToolkit.Extensions;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
@@ -204,4 +204,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking
         }
     }
 }
-#endif

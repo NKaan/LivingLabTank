@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 using System;
 using UnityEngine;
 
@@ -150,4 +150,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
         }
     }
 }
-#endif

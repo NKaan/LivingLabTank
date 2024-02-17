@@ -1,4 +1,4 @@
-#if MIRROR
+
 using MasterServerToolkit.Utils.Editor;
 using System.IO;
 using UnityEditor;
@@ -202,4 +202,3 @@ namespace MasterServerToolkit.MasterServer.Examples.Mirror
         }
     }
 }
-#endif

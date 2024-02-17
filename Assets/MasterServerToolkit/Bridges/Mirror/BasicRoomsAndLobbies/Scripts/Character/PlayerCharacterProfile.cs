@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 
 namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
 {
@@ -24,4 +24,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
         //protected virtual void OnDestroy() { }
     }
 }
-#endif

@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 using Mirror;
 using UnityEngine;
 
@@ -206,4 +206,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
         }
     }
 }
-#endif

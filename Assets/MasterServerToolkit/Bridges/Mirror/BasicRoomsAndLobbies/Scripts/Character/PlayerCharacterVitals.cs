@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 using MasterServerToolkit.Networking;
 using Mirror;
 using System;
@@ -120,4 +120,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
         }
     }
 }
-#endif

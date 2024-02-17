@@ -1,7 +1,7 @@
 // edgegap relay transport.
 // reuses KcpTransport with custom KcpServer/Client.
 
-//#if MIRROR <- commented out because MIRROR isn't defined on first import yet
+// <- commented out because MIRROR isn't defined on first import yet
 using System;
 using System.Text.RegularExpressions;
 using UnityEngine;

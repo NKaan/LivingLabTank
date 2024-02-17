@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 using kcp2k;
 using MasterServerToolkit.Logging;
 using MasterServerToolkit.MasterServer;
@@ -329,4 +329,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking
         #endregion
     }
 }
-#endif

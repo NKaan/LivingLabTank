@@ -1,4 +1,4 @@
-﻿#if MIRROR
+﻿
 using MasterServerToolkit.Logging;
 using MasterServerToolkit.MasterServer;
 using Mirror;
@@ -35,4 +35,3 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking.Character
         }
     }
 }
-#endif
