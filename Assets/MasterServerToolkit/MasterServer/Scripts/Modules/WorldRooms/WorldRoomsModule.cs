@@ -82,11 +82,6 @@ namespace MasterServerToolkit.MasterServer
 
             string zoneId = message.AsString();
 
-            foreach (var item in roomsList.Values)
-            {
-                Debug.Log(item.Options.Name);
-            }
-
             RegisteredRoom zoneRoom = roomsList.Values
                 .Where(r => r.Options.CustomOptions.AsString(MstDictKeys.WORLD_ZONE) == zoneId)
                 .FirstOrDefault();
