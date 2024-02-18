@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Complete
 {
-    public class TankShooting : MonoBehaviour
+    public class TankShooting : NetworkBehaviour
     {
         public int m_PlayerNumber = 1;              // Used to identify the different players.
         public Rigidbody m_Shell;                   // Prefab of the shell.
@@ -34,15 +35,19 @@ namespace Complete
         private void Start ()
         {
             // The fire axis is based on the player number.
-            m_FireButton = "Fire" + m_PlayerNumber;
+            m_FireButton = "Jump";
 
             // The rate that the launch force charges up is the range of possible forces by the max charge time.
             m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
         }
 
 
-        private void Update ()
+        public void Update ()
         {
+
+            if (!isLocalPlayer)
+                return;
+
             // The slider should have a default value of the minimum launch force.
             m_AimSlider.value = m_MinLaunchForce;
 
@@ -51,7 +56,7 @@ namespace Complete
             {
                 // ... use the max force and launch the shell.
                 m_CurrentLaunchForce = m_MaxLaunchForce;
-                Fire ();
+                ClientFire();
             }
             // Otherwise, if the fire button has just started being pressed...
             else if (Input.GetButtonDown (m_FireButton))
@@ -76,29 +81,41 @@ namespace Complete
             else if (Input.GetButtonUp (m_FireButton) && !m_Fired)
             {
                 // ... launch the shell.
-                Fire ();
+                ClientFire();
             }
         }
 
+        private void ClientFire()
+        {
+            m_Fired = true;
+            CmdFire(m_CurrentLaunchForce);
+            //m_CurrentLaunchForce = m_MinLaunchForce;
+        }
 
-        private void Fire ()
+
+        [Command] //Sadecec Serverda Çalışır
+        private void CmdFire (float _m_CurrentLaunchForce)
         {
             // Set the fired flag so only Fire is only called once.
             m_Fired = true;
 
             // Create an instance of the shell and store a reference to it's rigidbody.
-            Rigidbody shellInstance =
-                Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+            ShellExplosion shellInstance =
+                Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation).GetComponent<ShellExplosion>();
 
-            // Set the shell's velocity to the launch force in the fire position's forward direction.
-            shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward; 
+            shellInstance.m_CurrentLaunchForce = _m_CurrentLaunchForce;
 
+            NetworkServer.Spawn(shellInstance.gameObject);
+
+            RpcFire(_m_CurrentLaunchForce);
+        }
+
+        [ClientRpc] // Clientlerde çalışır (Tüm)
+        private void RpcFire(float _m_CurrentLaunchForce)
+        {
             // Change the clip to the firing clip and play it.
             m_ShootingAudio.clip = m_FireClip;
-            m_ShootingAudio.Play ();
-
-            // Reset the launch force.  This is a precaution in case of missing button events.
-            m_CurrentLaunchForce = m_MinLaunchForce;
+            m_ShootingAudio.Play();
         }
     }
 }

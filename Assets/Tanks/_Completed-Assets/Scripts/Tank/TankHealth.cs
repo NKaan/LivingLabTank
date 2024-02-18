@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Complete
 {
-    public class TankHealth : MonoBehaviour
+    public class TankHealth : NetworkBehaviour
     {
         public float m_StartingHealth = 100f;               // The amount of health each tank starts with.
         public Slider m_Slider;                             // The slider to represent how much health the tank currently has.
@@ -15,8 +16,8 @@ namespace Complete
         
         private AudioSource m_ExplosionAudio;               // The audio source to play when the tank explodes.
         private ParticleSystem m_ExplosionParticles;        // The particle system the will play when the tank is destroyed.
-        private float m_CurrentHealth;                      // How much health the tank currently has.
-        private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
+        [SyncVar(hook = nameof(SetHealthUI))] public float m_CurrentHealth;                      // How much health the tank currently has.
+        [SyncVar] public bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
 
 
         private void Awake ()
@@ -31,45 +32,52 @@ namespace Complete
             m_ExplosionParticles.gameObject.SetActive (false);
         }
 
-
         private void OnEnable()
         {
             // When the tank is enabled, reset the tank's health and whether or not it's dead.
             m_CurrentHealth = m_StartingHealth;
             m_Dead = false;
-
-            // Update the health slider's value and color.
-            SetHealthUI();
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            SetHealthUI(m_CurrentHealth, m_CurrentHealth);
+        }
 
+        [ServerCallback]
+        public void Update()
+        {
+            if(!m_Dead && transform.position.y < -2)
+            {
+                RpcOnDeath();
+            }
+        }
+
+        [Server]
         public void TakeDamage (float amount)
         {
             // Reduce current health by the amount of damage done.
             m_CurrentHealth -= amount;
 
-            // Change the UI elements appropriately.
-            SetHealthUI ();
-
             // If the current health is at or below zero and it has not yet been registered, call OnDeath.
             if (m_CurrentHealth <= 0f && !m_Dead)
             {
-                OnDeath ();
+                RpcOnDeath();
             }
         }
 
-
-        private void SetHealthUI ()
+        private void SetHealthUI (float oldHealt, float newHealt)
         {
             // Set the slider's value appropriately.
-            m_Slider.value = m_CurrentHealth;
+            m_Slider.value = newHealt;
 
             // Interpolate the color of the bar between the choosen colours based on the current percentage of the starting health.
-            m_FillImage.color = Color.Lerp (m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
+            m_FillImage.color = Color.Lerp (m_ZeroHealthColor, m_FullHealthColor, newHealt / m_StartingHealth);
         }
 
-
-        private void OnDeath ()
+        [ClientRpc]
+        private void RpcOnDeath ()
         {
             // Set the flag so that this function is only called once.
             m_Dead = true;
