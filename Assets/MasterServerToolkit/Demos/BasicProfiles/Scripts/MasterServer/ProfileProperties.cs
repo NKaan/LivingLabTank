@@ -1,3 +1,4 @@
+using MasterServerToolkit.Bridges;
 using MasterServerToolkit.MasterServer;
 
 namespace MasterServerToolkit.Examples.BasicProfile
@@ -12,6 +13,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
         {
             profile.Add(new ObservableString(ProfilePropertyOpCodes.displayName));
             profile.Add(new ObservableString(ProfilePropertyOpCodes.avatarUrl));
+            profile.Add(new ObservableColor(ProfilePropertyOpCodes.tankColor));
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.bronze));
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.silver));
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.gold));

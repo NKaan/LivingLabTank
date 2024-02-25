@@ -1,5 +1,6 @@
 using MasterServerToolkit.Json;
 using MasterServerToolkit.MasterServer;
+using MasterServerToolkit.Networking;
 using System.Text;
 using UnityEngine;
 
@@ -34,12 +35,19 @@ namespace MasterServerToolkit.Bridges
 
         public override void ClearUpdates() { }
 
-        public override void Deserialize(string value)
+        public override async void Deserialize(string value)
         {
             value = value.StartsWith("#") ? value : $"#{value}";
 
-            if (!ColorUtility.TryParseHtmlString(value, out _value))
-                _value = Color.white;
+            await MstTimer.RunInMainThreadAsyncWait(() =>
+            {
+                if (!ColorUtility.TryParseHtmlString(value, out _value))
+                    _value = Color.white;
+
+                return true;
+            });
+
+            
         }
 
         public override void FromBytes(byte[] data)

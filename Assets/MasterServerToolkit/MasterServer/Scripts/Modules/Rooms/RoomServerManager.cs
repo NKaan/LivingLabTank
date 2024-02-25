@@ -1,8 +1,11 @@
-﻿using MasterServerToolkit.Networking;
+﻿using MasterServerToolkit.Examples.BasicProfile;
+using MasterServerToolkit.Networking;
+using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -264,7 +267,7 @@ namespace MasterServerToolkit.MasterServer
                     logger.Debug($"Client {roomPeerId} is successfully validated");
                     logger.Debug("Getting his account info...");
 
-                    Mst.Server.Auth.GetPeerAccountInfo(usernameAndPeerId.PeerId, (accountInfo, accountError) =>
+                    Mst.Server.Auth.GetPeerAccountInfo(usernameAndPeerId.PeerId, async (accountInfo, accountError) =>
                     {
                         try
                         {
@@ -286,10 +289,14 @@ namespace MasterServerToolkit.MasterServer
                             // Create new room player
                             var player = new RoomPlayer(usernameAndPeerId.PeerId, roomPeerId, accountInfo.UserId, accountInfo.Username, accountProperties)
                             {
-                                Profile = ProfileFactory.Invoke(accountInfo.UserId)
+                                Profile = ProfileFactory.Invoke(accountInfo.UserId),
                             };
 
+                            ProfileProperties.Fill(player.Profile);
+
                             players.Add(roomPeerId, player);
+
+                            await Task.Delay(2000);
 
                             // If server is required user profile
                             if (autoLoadUserProfile)
@@ -477,6 +484,7 @@ namespace MasterServerToolkit.MasterServer
             if (players.ContainsKey(roomPeerId))
             {
                 RoomPlayer player = players[roomPeerId];
+
                 logger.Debug($"Client {roomPeerId} has become a player of this room. Congratulations to {player.Username}");
 
                 OnPlayerJoinedRoom(player);

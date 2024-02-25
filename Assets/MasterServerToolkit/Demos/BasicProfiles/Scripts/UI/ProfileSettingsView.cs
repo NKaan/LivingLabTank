@@ -10,13 +10,13 @@ namespace MasterServerToolkit.Examples.BasicProfile
         #region INSPECTOR
 
         [Header("Components"), SerializeField]
-        private TMP_InputField displayNameInputField;
+        protected TMP_InputField displayNameInputField;
         [SerializeField]
-        private TMP_InputField avatarUrlInputField;
+        protected TMP_InputField avatarUrlInputField;
 
         #endregion
 
-        private DemoProfilesBehaviour profileBehaviour;
+        protected DemoProfilesBehaviour profileBehaviour;
 
         protected override void Start()
         {
@@ -26,6 +26,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
             profileBehaviour.OnProfileLoadedEvent.AddListener(OnProfileLoadedEventHandler);
         }
 
+        
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -34,7 +35,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 profileBehaviour.Profile.OnPropertyUpdatedEvent -= ProfilesManager_OnPropertyUpdatedEvent;
         }
 
-        public void Submit()
+        public virtual void Submit()
         {
             var data = new MstProperties();
             data.Set("displayName", displayNameInputField.text);

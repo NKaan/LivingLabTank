@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 namespace MasterServerToolkit.MasterServer
 {
@@ -173,34 +174,41 @@ namespace MasterServerToolkit.MasterServer
         protected virtual async void OnUserLoggedInEventHandler(IUserPeerExtension user)
         {
             user.Peer.OnConnectionCloseEvent += OnPeerPlayerDisconnectedEventHandler;
-
-            // Create a profile
-            ObservableServerProfile profile;
-
-            if (profilesList.ContainsKey(user.UserId))
+            Debug.Log("Girdi");
+            try
             {
-                // There's a profile from before, which we can use
-                profile = profilesList[user.UserId];
-                profile.ClientPeer = user.Peer;
+                // Create a profile
+                ObservableServerProfile profile;
+
+                if (profilesList.ContainsKey(user.UserId))
+                {
+                    // There's a profile from before, which we can use
+                    profile = profilesList[user.UserId];
+                    profile.ClientPeer = user.Peer;
+                }
+                else
+                {
+                    // We need to create a new one
+                    profile = CreateProfile(user.UserId, user.Peer);
+                    profilesList.TryAdd(user.UserId, profile);
+                    // Restore profile data from database
+                    await profileDatabaseAccessor.RestoreProfileAsync(profile);
+                    // Listen to profile events
+                    profile.OnModifiedInServerEvent += OnProfileChangedEventHandler;
+                }
+                Debug.Log("Girdi 2");
+                // 
+                profile.ClearUpdates();
+
+                // Save profile property
+                user.Peer.AddExtension(new ProfilePeerExtension(profile, user.Peer));
             }
-            else
+            catch (Exception e)
             {
-                // We need to create a new one
-                profile = CreateProfile(user.UserId, user.Peer);
-                profilesList.TryAdd(user.UserId, profile);
-
-                // Restore profile data from database
-                await profileDatabaseAccessor.RestoreProfileAsync(profile);
-
-                // Listen to profile events
-                profile.OnModifiedInServerEvent += OnProfileChangedEventHandler;
+                Debug.LogError(e.Message);
             }
 
-            // 
-            profile.ClearUpdates();
-
-            // Save profile property
-            user.Peer.AddExtension(new ProfilePeerExtension(profile, user.Peer));
+            
         }
 
         /// <summary>
@@ -469,6 +477,7 @@ namespace MasterServerToolkit.MasterServer
 
             if (profile == null)
             {
+                Debug.LogError("User Profil ıs NULL");
                 message.Respond(ResponseStatus.Failed);
                 return;
             }

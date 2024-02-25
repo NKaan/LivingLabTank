@@ -14,6 +14,8 @@ namespace Complete
         public float m_ExplosionRadius = 5f;                // The maximum distance away from the explosion tanks can be and are still affected.
         [SyncVar] public float m_CurrentLaunchForce = 20f;
 
+        public uint ownPlayerID;
+
         private void Start ()
         {
             // If it isn't destroyed by then, destroy the shell after it's lifetime.
@@ -58,11 +60,11 @@ namespace Complete
                 float damage = CalculateDamage (targetRigidbody.position);
 
                 // Deal this damage to the tank.
-                targetHealth.TakeDamage (damage);
+                targetHealth.TakeDamage (damage, ownPlayerID);
+
             }
 
             RpcParticleStart();
-
             // Destroy the shell.
             Destroy (gameObject);
         }

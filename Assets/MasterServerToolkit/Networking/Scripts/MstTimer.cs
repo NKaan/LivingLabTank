@@ -3,6 +3,7 @@ using MasterServerToolkit.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace MasterServerToolkit.Networking
@@ -43,6 +44,8 @@ namespace MasterServerToolkit.Networking
 
             if (isNowDestroying) return;
 
+            _instance = this;
+            _wasCreated = true;
             // Framework requires applications to run in background
             Application.runInBackground = true;
 
@@ -69,7 +72,7 @@ namespace MasterServerToolkit.Networking
         {
             base.OnDestroy();
 
-            _mainThreadActions.Clear();
+            _mainThreadActions?.Clear();
             CurrentTick = 0;
         }
 
@@ -250,6 +253,15 @@ namespace MasterServerToolkit.Networking
         {
             if (TryGetOrCreate(out var instance))
                 instance.AddToMainThread(action);
+        }
+
+        public static async Task<T> RunInMainThreadAsyncWait<T>(Func<T> action)
+        {
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+            if (TryGetOrCreate(out var instance))
+                instance.AddToMainThread(() => { tcs.SetResult(action.Invoke()); });
+
+            return await tcs.Task;
         }
 
         /// <summary>

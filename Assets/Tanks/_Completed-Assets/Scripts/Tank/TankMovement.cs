@@ -1,12 +1,14 @@
 ﻿using Mirror;
+using Mirror.Examples.Basic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Complete
 {
     public class TankMovement : NetworkBehaviour
     {
         public int m_PlayerNumber = 1;              // Used to identify which tank belongs to which player.  This is set by this tank's manager.
-        public float m_Speed = 12f;                 // How fast the tank moves forward and back.
+                        // How fast the tank moves forward and back.
         public float m_TurnSpeed = 180f;            // How fast the tank turns in degrees per second.
         public AudioSource m_MovementAudio;         // Reference to the audio source used to play engine sounds. NB: different to the shooting audio source.
         public AudioClip m_EngineIdling;            // Audio to play when the tank isn't moving.
@@ -21,11 +23,44 @@ namespace Complete
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
         private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
 
+        [SyncVar]
+        public float m_Speed = 12f;
+
+        public float reduceFuelPerSecond = 1f;
+        public float reduceMoveFuelPerSecond = 3f;
+
+        [SyncVar] public float m_Max_Fuel = 100f;
+        [SyncVar(hook = nameof(FuelSet))] public float m_Fuel = 100f;
+
+        public UnityEvent OnFueldEmpty = new UnityEvent();
+
+        private Player m_Player;
+
         private void Awake ()
         {
             m_Rigidbody = GetComponent<Rigidbody> ();
+            m_Player = GetComponent<Player> ();
+            m_Player.playerUI = GameObject.FindObjectOfType<GameUI>();
+
+        }
+        public void FuelSet(float oldValue,float nextValue)
+        {
+            if(isLocalPlayer)
+                m_Player.playerUI.playerFuelSlider.value = nextValue;
         }
 
+        public override void OnStartLocalPlayer()
+        {
+            base.OnStartLocalPlayer();
+
+            if (!isLocalPlayer)
+                return;
+
+            
+            m_Player.playerUI.playerFuelSlider.maxValue = m_Max_Fuel;
+
+            FuelSet(m_Fuel, m_Fuel);
+        }
 
         private void OnEnable ()
         {
@@ -73,16 +108,40 @@ namespace Complete
 
         public void Update ()
         {
-            if (!isLocalPlayer)
-                return;
+            if (isLocalPlayer && !m_Player.health.m_Dead)
+            {
+                m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
+                m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
 
-            m_MovementInputValue = Input.GetAxis (m_MovementAxisName);
-            m_TurnInputValue = Input.GetAxis (m_TurnAxisName);
+                if (m_MovementInputValue != 0 && m_Fuel > 0)
+                    Move();
 
-            Move();
-            Turn();
-            EngineAudio ();
+                if (m_TurnInputValue != 0)
+                    Turn();
 
+                EngineAudio();
+            }
+
+            if(isServer && !m_Player.health.m_Dead)
+                SetFuel(reduceFuelPerSecond);
+        }
+
+        public void SetFuel(float addFuel)
+        {
+            if (isServer)
+            {
+                if (m_Fuel <= 0)
+                    return;
+
+                m_Fuel -= Time.deltaTime * addFuel;
+
+                if (m_Fuel <= 0)
+                {
+                    m_Fuel = 0;
+                    OnFueldEmpty?.Invoke();
+                }
+
+            }
         }
 
 
@@ -128,6 +187,9 @@ namespace Complete
 
             // Bu hareketi transform'un pozisyonuna uygula.
             transform.position += movement;
+
+            if(isServer)
+                SetFuel(reduceMoveFuelPerSecond);
         }
 
         private void Turn()

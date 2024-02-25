@@ -16,7 +16,7 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking
         #region INSPECTOR
 
         [Header("Components"), SerializeField]
-        protected RoomServerManager roomServerManager;
+        public RoomServerManager roomServerManager;
 
         /// <summary>
         /// Log levelof this module
@@ -25,8 +25,6 @@ namespace MasterServerToolkit.Bridges.MirrorNetworking
         protected LogLevel logLevel = LogLevel.Info;
 
         #endregion
-
-        public static new RoomNetworkManager singleton { get; private set; }
 
         /// <summary>
         /// Logger assigned to this module

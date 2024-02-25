@@ -1,4 +1,5 @@
-﻿using MasterServerToolkit.Extensions;
+﻿using MasterServerToolkit.Bridges;
+using MasterServerToolkit.Extensions;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
 using MasterServerToolkit.Utils;
@@ -53,6 +54,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
 
             profile.Get<ObservableString>(ProfilePropertyOpCodes.displayName).Value = SimpleNameGenerator.Generate(Gender.Male);
             profile.Get<ObservableString>(ProfilePropertyOpCodes.avatarUrl).Value = avatarUrl;
+            profile.Get<ObservableColor>(ProfilePropertyOpCodes.tankColor).Value = Color.green;
 
             if (profile.TryGet(ProfilePropertyOpCodes.gold, out ObservableInt goldProperty))
                 goldProperty.Add(gold);
@@ -81,7 +83,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
             }
         }
 
-        private void UpdateDisplayNameRequestHandler(IIncomingMessage message)
+        private async void UpdateDisplayNameRequestHandler(IIncomingMessage message)
         {
             var userExtension = message.Peer.GetExtension<IUserPeerExtension>();
 
@@ -99,6 +101,15 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 {
                     profile.Get<ObservableString>(ProfilePropertyOpCodes.displayName).Value = newProfileData["displayName"];
                     profile.Get<ObservableString>(ProfilePropertyOpCodes.avatarUrl).Value = newProfileData["avatarUrl"];
+
+                    await MstTimer.RunInMainThreadAsyncWait(() => 
+                    {
+                        if (ColorUtility.TryParseHtmlString(newProfileData["tankColor"], out Color color))
+                        {
+                            profile.Get<ObservableColor>(ProfilePropertyOpCodes.tankColor).Value = color;
+                        }
+                        return true; 
+                    });
 
                     message.Respond(ResponseStatus.Success);
                 }

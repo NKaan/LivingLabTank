@@ -218,6 +218,7 @@ namespace MasterServerToolkit.MasterServer
             {
                 CreateNoWindow = false,
                 UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 Arguments = processArguments.ToReadableString(" ", " ")
             };
 
