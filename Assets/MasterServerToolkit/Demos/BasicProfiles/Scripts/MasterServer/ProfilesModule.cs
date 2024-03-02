@@ -1,4 +1,5 @@
-﻿using MasterServerToolkit.Bridges;
+﻿
+using MasterServerToolkit.Bridges;
 using MasterServerToolkit.Extensions;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
@@ -20,6 +21,8 @@ namespace MasterServerToolkit.Examples.BasicProfile
         [SerializeField]
         private string avatarUrl = "https://i.imgur.com/JQ9pRoD.png";
 
+        
+
         public HelpBox _header = new HelpBox()
         {
             Text = "This script is a custom module, which sets up profiles values for new users"
@@ -35,10 +38,28 @@ namespace MasterServerToolkit.Examples.BasicProfile
             server.RegisterMessageHandler(MstOpCodes.UpdateDisplayNameRequest, UpdateDisplayNameRequestHandler);
             server.RegisterMessageHandler(MessageOpCodes.BuyDemoItem, BuyDemoItemMessageHandler);
             server.RegisterMessageHandler(MessageOpCodes.SellDemoItem, SellDemoItemMessageHandler);
+            server.RegisterMessageHandler(MessageOpCodes.GMPlayerDeath, GMPlayerDeath);
+
+            OnUserProfilLoadedEvent += ProfilesModule_OnUserProfilLoadedEvent;
 
             //Update profile resources each 5 sec
             InvokeRepeating(nameof(IncreaseResources), 1f, 1f);
         }
+
+        private void ProfilesModule_OnUserProfilLoadedEvent(ObservableServerProfile serverProfile)
+        {
+            serverProfile.Get<ObservableInt>(ProfilePropertyOpCodes.playerExp).OnDirtyEvent += (exp) =>
+            {
+                //int playerExp = exp.As<ObservableInt>().Value;
+                //int playerLevel = serverProfile.Properties[ProfilePropertyOpCodes.playerLevel].As<ObservableInt>().Value;
+                //float needExp = NeedExpCalculate(playerLevel);
+            };
+
+        }
+
+        
+
+
 
         /// <summary>
         /// This method is just for creation of profile on server side as default for users that are logged in for the first time
@@ -80,6 +101,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
 
                 if (profile.TryGet(ProfilePropertyOpCodes.bronze, out ObservableInt bronzeProperty))
                     bronzeProperty.Add(10);
+
             }
         }
 
@@ -211,6 +233,25 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 {
                     message.Respond("Invalid session", ResponseStatus.Unauthorized);
                 }
+            }
+            catch (Exception e)
+            {
+                message.Respond($"Internal Server Error: {e}", ResponseStatus.Error);
+            }
+        }
+
+        private void GMPlayerDeath(IIncomingMessage message)
+        {
+            try
+            {
+                MstProperties prop = MstProperties.FromBytes(message.AsBytes());
+
+                ObservableServerProfile deathPlayer = profilesList[prop.AsString("DeathPlayer")];
+                ObservableServerProfile killerPlayer = profilesList[prop.AsString("KillerPlayer")];
+
+                //AddExp(killerPlayer,50);
+
+                message.Respond(ResponseStatus.Success);
             }
             catch (Exception e)
             {

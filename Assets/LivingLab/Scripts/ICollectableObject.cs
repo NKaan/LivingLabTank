@@ -9,6 +9,7 @@ public abstract class ICollectableObject : NetworkBehaviour
     [SyncVar(hook = nameof(CollectedHook))] public bool collected = false;
     public float collectedTime = 5f;
     private MeshRenderer myRenderer;
+    public string collectableObjectName;
 
     private void Awake()
     {

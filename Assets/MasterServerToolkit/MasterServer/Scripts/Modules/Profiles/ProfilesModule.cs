@@ -106,6 +106,9 @@ namespace MasterServerToolkit.MasterServer
         /// </summary>
         public IEnumerable<ObservableServerProfile> Profiles => profilesList.Values;
 
+        public delegate void UserOnProfileLoaded(ObservableServerProfile serverProfile);
+        public event UserOnProfileLoaded OnUserProfilLoadedEvent;
+
         /// <summary>
         /// Ignore errors occurred when profile data mismatch. False by default
         /// </summary>
@@ -196,12 +199,14 @@ namespace MasterServerToolkit.MasterServer
                     // Listen to profile events
                     profile.OnModifiedInServerEvent += OnProfileChangedEventHandler;
                 }
-                Debug.Log("Girdi 2");
+
                 // 
                 profile.ClearUpdates();
 
                 // Save profile property
                 user.Peer.AddExtension(new ProfilePeerExtension(profile, user.Peer));
+
+                OnUserProfilLoadedEvent?.Invoke(profile);
             }
             catch (Exception e)
             {

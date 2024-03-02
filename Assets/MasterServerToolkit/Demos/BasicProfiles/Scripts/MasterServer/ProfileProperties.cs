@@ -18,6 +18,10 @@ namespace MasterServerToolkit.Examples.BasicProfile
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.silver));
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.gold));
             profile.Add(new ObservableDictStringInt(ProfilePropertyOpCodes.items));
+
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.playerLevel));
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.playerExp));
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.needExp));
         }
     }
 }

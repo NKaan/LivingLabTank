@@ -1,6 +1,8 @@
-﻿using MasterServerToolkit.Networking;
+﻿using MasterServerToolkit.Examples.BasicProfile;
+using MasterServerToolkit.Networking;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 namespace MasterServerToolkit.MasterServer
 {
@@ -50,6 +52,27 @@ namespace MasterServerToolkit.MasterServer
         public void RegisterRoom(RoomOptions options, RoomCreationCallback callback)
         {
             RegisterRoom(options, callback, Connection);
+        }
+
+
+        public void PlayerDeath(string deathUserID,string killerUserID,UnityAction<bool> callback)
+        {
+
+            MstProperties prop = new MstProperties();
+            prop.Add("DeathPlayer", deathUserID);
+            prop.Add("KillerPlayer", killerUserID);
+
+            Connection.SendMessage(MessageOpCodes.GMPlayerDeath, prop.ToBytes(), (status, response) =>
+            {
+                if (status != ResponseStatus.Success)
+                {
+                    callback.Invoke(false);
+                    return;
+                }
+
+                callback.Invoke(true);
+
+            });
         }
 
         /// <summary>

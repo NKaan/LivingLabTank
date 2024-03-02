@@ -1,7 +1,9 @@
 ﻿using MasterServerToolkit.Bridges;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.UI;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MasterServerToolkit.Examples.BasicProfile
 {
@@ -20,6 +22,13 @@ namespace MasterServerToolkit.Examples.BasicProfile
         private UIProperty silverUIProperty;
         [SerializeField]
         private UIProperty goldUIProperty;
+
+
+
+        public Slider playerExpSlider;
+        public TextMeshProUGUI playerLevelTxt;
+        public TextMeshProUGUI playerOwnExpTxt;
+        public TextMeshProUGUI playerExpPercentageTxt;
 
         #endregion
 
@@ -61,6 +70,15 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 silverUIProperty.SetValue(property.As<ObservableInt>().Value);
             else if (key == ProfilePropertyOpCodes.gold)
                 goldUIProperty.SetValue(property.As<ObservableInt>().Value);
+            else if (key == ProfilePropertyOpCodes.playerExp)
+            {
+                int playerExp = property.As<ObservableInt>().Value;
+
+            }
+            else if (key == ProfilePropertyOpCodes.playerLevel)
+            {
+                playerLevelTxt.text = "Lv." + property.As<ObservableInt>().Value.ToString();
+            }
         }
     }
 }

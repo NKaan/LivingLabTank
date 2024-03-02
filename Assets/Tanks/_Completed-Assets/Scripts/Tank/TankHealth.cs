@@ -57,12 +57,12 @@ namespace Complete
             if(!m_Dead && transform.position.y < -2)
             {
                 m_Dead = true;
-                RpcOnDeath(netId);
+                OnDeath(netId);
             }
         }
 
         [Server]
-        public void TakeDamage (float amount,uint firePlayerID)
+        public void TakeDamage (float amount,uint killerPlayer)
         {
             // Reduce current health by the amount of damage done.
             m_CurrentHealth -= amount;
@@ -77,8 +77,15 @@ namespace Complete
                     
                 }).Start();
 
-                RpcOnDeath(firePlayerID);
+                OnDeath(killerPlayer);
             }
+        }
+
+        [Server]
+        public void OnDeath(uint killerPlayer)
+        {
+            myPlayer.OnDeath.Invoke(netId, killerPlayer);
+            RpcOnDeath(killerPlayer);
         }
 
         private void SetHealthUI (float oldHealt, float newHealt)

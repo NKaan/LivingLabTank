@@ -13,5 +13,11 @@ namespace MasterServerToolkit.MasterServer
         public static ushort spice = nameof(spice).ToUint16Hash();
         public static ushort wood = nameof(wood).ToUint16Hash();
         public static ushort items = nameof(items).ToUint16Hash();
+
+
+        public static ushort playerLevel = nameof(playerLevel).ToUint16Hash();
+        public static ushort playerExp = nameof(playerExp).ToUint16Hash();
+        public static ushort needExp = nameof(needExp).ToUint16Hash();
+
     }
 }
