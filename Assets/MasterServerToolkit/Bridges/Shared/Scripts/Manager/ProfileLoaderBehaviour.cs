@@ -1,6 +1,8 @@
-﻿using MasterServerToolkit.MasterServer;
+﻿using MasterServerToolkit.Examples.BasicProfile;
+using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
 using MasterServerToolkit.Utils;
+using System.Diagnostics;
 using UnityEngine.Events;
 
 namespace MasterServerToolkit.Bridges
@@ -51,21 +53,26 @@ namespace MasterServerToolkit.Bridges
         /// </summary>
         public virtual void LoadProfile()
         {
-            Mst.Client.Profiles.FillInProfileValues(Profile, (isSuccessful, error) =>
+            MstTimer.WaitUntil(() => Profile.Count > 0, (asd) => 
             {
-                if (isSuccessful)
+                Mst.Client.Profiles.FillInProfileValues(Profile, (isSuccessful, error) =>
                 {
-                    OnProfileLoaded();
-                    OnProfileLoadedEvent?.Invoke();
-                }
-                else
-                {
-                    logger.Error($"Could not load user profile. Error: {error}");
+                    if (isSuccessful)
+                    {
+                        OnProfileLoaded();
+                        OnProfileLoadedEvent?.Invoke();
+                    }
+                    else
+                    {
+                        logger.Error($"Could not load user profile. Error: {error}");
 
-                    OnProfileLoadFailed();
-                    OnProfileLoadFailedEvent?.Invoke();
-                }
-            });
+                        OnProfileLoadFailed();
+                        OnProfileLoadFailedEvent?.Invoke();
+                    }
+                });
+            },5f);
+
+            
         }
     }
 }

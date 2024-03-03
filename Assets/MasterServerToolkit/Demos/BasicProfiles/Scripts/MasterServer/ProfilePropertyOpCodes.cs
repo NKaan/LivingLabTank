@@ -19,5 +19,14 @@ namespace MasterServerToolkit.MasterServer
         public static ushort playerExp = nameof(playerExp).ToUint16Hash();
         public static ushort needExp = nameof(needExp).ToUint16Hash();
 
+
+        public static ushort usedStatPoint = nameof(usedStatPoint).ToUint16Hash();
+
+        public static ushort damageStatPoint = nameof(damageStatPoint).ToUint16Hash();
+        public static ushort speedStatPoint = nameof(speedStatPoint).ToUint16Hash();
+        public static ushort healthStatPoint = nameof(healthStatPoint).ToUint16Hash();
+        public static ushort fuelStatPoint = nameof(fuelStatPoint).ToUint16Hash();
+
+
     }
 }

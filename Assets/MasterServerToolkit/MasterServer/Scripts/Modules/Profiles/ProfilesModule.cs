@@ -177,7 +177,7 @@ namespace MasterServerToolkit.MasterServer
         protected virtual async void OnUserLoggedInEventHandler(IUserPeerExtension user)
         {
             user.Peer.OnConnectionCloseEvent += OnPeerPlayerDisconnectedEventHandler;
-            Debug.Log("Girdi");
+
             try
             {
                 // Create a profile

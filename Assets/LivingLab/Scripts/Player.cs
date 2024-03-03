@@ -14,11 +14,13 @@ public class Player : NetworkBehaviour
     public ParticleSystem levelUpEffect;
     public Transform effectContent;
     public RoomPlayer roomPlayer;
-    public GameUI playerUI;
+    public GameUI gameUI;
     public TankHealth health;
     public TankMovement movoment;
-    public TextMeshProUGUI playerNameUI;
+    public TextMeshProUGUI playerNameAndLevelUI;
     public CameraController myCamera;
+
+    public PlayerRankMiniUI myMiniRankUI;
 
     [SerializeField]
     private float baseExp = 100f;
@@ -28,7 +30,9 @@ public class Player : NetworkBehaviour
 
     public UnityEvent<uint,uint> OnDeath;
 
+    [SyncVar(hook = nameof(SetPointUI))] public int playerPoint;
     [SyncVar(hook = nameof(SetNameUI))] public string playerName;
+    [SyncVar(hook = nameof(SetLevelUI))] public int playerLevel;
     [SyncVar(hook = nameof(SetColor))] public Color m_PlayerColor;
 
     MeshRenderer[] myMeshRenderes;
@@ -39,11 +43,61 @@ public class Player : NetworkBehaviour
         movoment = GetComponent<TankMovement>();
         myCamera = Camera.main.GetComponent<CameraController>();
         myMeshRenderes = GetComponentsInChildren<MeshRenderer>();
+        gameUI = GameObject.FindObjectOfType<GameUI>();
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        RoomNetworkManager roomNetworkManager = NetworkManager.singleton as RoomNetworkManager;
+        roomPlayer = roomNetworkManager.roomServerManager.GetRoomPlayerByRoomPeer(connectionToClient.connectionId);
+
+        playerName = roomPlayer.Profile.Get<ObservableString>(ProfilePropertyOpCodes.displayName).Value;
+        m_PlayerColor = roomPlayer.Profile.Get<ObservableColor>(ProfilePropertyOpCodes.tankColor).Value;
+        playerLevel = roomPlayer.Profile.Get<ObservableInt>(ProfilePropertyOpCodes.playerLevel).Value;
+
+        roomPlayer.Profile.Properties[ProfilePropertyOpCodes.playerLevel].OnDirtyEvent += (obs) =>
+        {
+            playerLevel = obs.As<ObservableInt>().Value;
+        };
+
+        OnDeath.AddListener((deathPlayerID, killerPlayerID) =>
+        {
+            RoomPlayer deatPlayer = NetworkServer.spawned[deathPlayerID].GetComponent<Player>().roomPlayer;
+            RoomPlayer killerPlayer = NetworkServer.spawned[killerPlayerID].GetComponent<Player>().roomPlayer;
+            playerPoint = 0;
+        });
+
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        gameUI.AddPlayerRankMiniUI(this);
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        gameUI.DeleteRankUIPlayer(this);
     }
 
     public void SetNameUI(string oldName,string nextName)
     {
-        playerNameUI.text = nextName;
+        playerNameAndLevelUI.text = "Lv." + playerLevel.ToString() + " " + nextName;
+    }
+
+    public void SetLevelUI(int oldLevel, int nextLevel)
+    {
+        playerNameAndLevelUI.text = "Lv." + nextLevel.ToString() + " " + playerName;
+        if(oldLevel != 0)
+            UpLevel();
+    }
+
+    public void SetPointUI(int oldPoint, int nextPoint)
+    {
+        myMiniRankUI?.UpdateTxt();
     }
 
     public void SetColor(Color oldColor, Color nextColor)
@@ -88,51 +142,21 @@ public class Player : NetworkBehaviour
             Vector3 lookDirection = cameraPosition - transform.position;
 
             // Isim etiketinin rotasyonunu belirle
-            playerNameUI.transform.rotation = Quaternion.LookRotation(-lookDirection, upVector);
+            playerNameAndLevelUI.transform.rotation = Quaternion.LookRotation(-lookDirection, upVector);
 
         }   
     }
 
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-
-        RoomNetworkManager roomNetworkManager = NetworkManager.singleton as RoomNetworkManager;
-        roomPlayer = roomNetworkManager.roomServerManager.GetRoomPlayerByRoomPeer(connectionToClient.connectionId);
-
-        playerName = roomPlayer.Profile.Get<ObservableString>(ProfilePropertyOpCodes.displayName).Value;
-        m_PlayerColor = roomPlayer.Profile.Get<ObservableColor>(ProfilePropertyOpCodes.tankColor).Value;
-
-
-        roomPlayer.Profile.Properties[ProfilePropertyOpCodes.playerLevel].OnDirtyEvent += (obs) =>
-        {
-            int playerLevel = obs.As<ObservableInt>().Value;
-            UpLevel(netId);
-        };
-
-        OnDeath.AddListener((deathPlayerID, killerPlayerID) => 
-        {
-            RoomPlayer deatPlayer = NetworkServer.spawned[deathPlayerID].GetComponent<Player>().roomPlayer;
-            RoomPlayer killerPlayer = NetworkServer.spawned[killerPlayerID].GetComponent<Player>().roomPlayer;
-
-            AddExp(killerPlayer.Profile,50);
-
-            //Mst.Server.Rooms.PlayerDeath(deatPlayer.UserId, killerPlayer.UserId,(result) => 
-            //{
-            //    Debug.Log("OnDeath Result " + result.ToString());
-            //});
-
-        });
-
-    }
+    
 
     public float NeedExpCalculate(int playerLevel)
     {
         return (float)(baseExp * Math.Pow(1.1, playerLevel - 1));
     }
 
-    public void AddExp(ObservableServerProfile serverProfile, float addExp)
+    public void AddExp(float addExp)
     {
+        ObservableServerProfile serverProfile = roomPlayer.Profile;
         addExp += addExp *= expDrop / 100;
         serverProfile.Properties[ProfilePropertyOpCodes.playerExp].As<ObservableInt>().Value += (int)addExp;
 
@@ -142,24 +166,36 @@ public class Player : NetworkBehaviour
         {
             serverProfile.Properties[ProfilePropertyOpCodes.playerLevel].As<ObservableInt>().Value++;
             serverProfile.Properties[ProfilePropertyOpCodes.playerExp].As<ObservableInt>().Value -= (int)needExp;
-            AddExp(serverProfile, 0);
+            AddExp(0);
             return;
         }
     }
 
-
-    [ClientRpc]
-    public void UpLevel(uint upLevelPlayerID)
+    public void AddPoint(int addPointCount)
     {
-        Player upLevelPlayer = NetworkClient.spawned[upLevelPlayerID].GetComponent<Player>();
-        ParticleSystem _levelUpEffect = Instantiate(upLevelPlayer.levelUpEffect).GetComponent<ParticleSystem>();
-        upLevelPlayer.AddAffect(_levelUpEffect);
-        Destroy(_levelUpEffect.gameObject, 3f);
+        playerPoint += addPointCount;
+
+        if(addPointCount > 2)
+        {
+            AddExp(addPointCount / 2);
+
+            if(addPointCount > 4)
+                AddGold(addPointCount / 4);
+        }
+        
     }
 
-    public override void OnStartClient()
+    public void AddGold(int addGoldCount)
     {
-        base.OnStartClient();
+        roomPlayer.Profile.Properties[ProfilePropertyOpCodes.gold].As<ObservableInt>().Value += addGoldCount;
+    }
+
+    public void UpLevel()
+    {
+        ParticleSystem _levelUpEffect = Instantiate(levelUpEffect).GetComponent<ParticleSystem>();
+        AddAffect(_levelUpEffect);
+        Destroy(_levelUpEffect.gameObject, 3f);
+        myMiniRankUI?.UpdateTxt();
     }
 
     [Server]

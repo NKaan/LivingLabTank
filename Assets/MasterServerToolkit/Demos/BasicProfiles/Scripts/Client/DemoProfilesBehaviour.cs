@@ -1,6 +1,7 @@
 ﻿using MasterServerToolkit.Bridges;
 using MasterServerToolkit.MasterServer;
 using MasterServerToolkit.Networking;
+using System.Diagnostics;
 using UnityEngine.Events;
 
 namespace MasterServerToolkit.Examples.BasicProfile

@@ -11,6 +11,8 @@ public abstract class ICollectableObject : NetworkBehaviour
     private MeshRenderer myRenderer;
     public string collectableObjectName;
 
+    public int addPoint = 10;
+
     private void Awake()
     {
         myRenderer = GetComponent<MeshRenderer>();
@@ -38,6 +40,8 @@ public abstract class ICollectableObject : NetworkBehaviour
 
         if(player != null)
             OnTriggerEnterPlayer(player);
+
+        player.AddPoint(addPoint);
 
         Wait.Seconds(collectedTime, () => { collected = false;  }).Start();
 

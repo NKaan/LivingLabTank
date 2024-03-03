@@ -6,6 +6,7 @@ using MasterServerToolkit.Networking;
 using MasterServerToolkit.Utils;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 namespace MasterServerToolkit.Examples.BasicProfile
@@ -39,6 +40,7 @@ namespace MasterServerToolkit.Examples.BasicProfile
             server.RegisterMessageHandler(MessageOpCodes.BuyDemoItem, BuyDemoItemMessageHandler);
             server.RegisterMessageHandler(MessageOpCodes.SellDemoItem, SellDemoItemMessageHandler);
             server.RegisterMessageHandler(MessageOpCodes.GMPlayerDeath, GMPlayerDeath);
+            server.RegisterMessageHandler(MessageOpCodes.CMAddStatPoint, CMAddStatPoint);
 
             OnUserProfilLoadedEvent += ProfilesModule_OnUserProfilLoadedEvent;
 
@@ -102,6 +104,95 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 if (profile.TryGet(ProfilePropertyOpCodes.bronze, out ObservableInt bronzeProperty))
                     bronzeProperty.Add(10);
 
+            }
+        }
+
+        private void CMAddStatPoint(IIncomingMessage message)
+        {
+            try
+            {
+                var userExtension = message.Peer.GetExtension<IUserPeerExtension>();
+
+                if (userExtension == null || userExtension.Account == null)
+                {
+                    message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                    return;
+                }
+
+                MstProperties prop = MstProperties.FromBytes(message.AsBytes());
+
+                int statID = prop.AsInt("statID");
+                int value = prop.AsInt("value");
+
+                if (profilesList.TryGetValue(userExtension.UserId, out ObservableServerProfile profile))
+                {
+
+                    if(profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value + value > profile.Properties[ProfilePropertyOpCodes.playerLevel].As<ObservableInt>().Value)
+                    {
+                        message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                        return;
+                    }
+
+                    if (profile.Properties[ProfilePropertyOpCodes.gold].As<ObservableInt>().Value < Math.Abs(value) * 1000)
+                    {
+                        message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                        return;
+                    }
+
+                    if (statID == 1)
+                    {
+                        if(profile.Properties[ProfilePropertyOpCodes.damageStatPoint].As<ObservableInt>().Value + value > 0)
+                            profile.Properties[ProfilePropertyOpCodes.damageStatPoint].As<ObservableInt>().Value += value;
+                        else
+                        {
+                            message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                            return;
+                        }
+                    }
+                    else if(statID == 2)
+                    {
+                        if (profile.Properties[ProfilePropertyOpCodes.speedStatPoint].As<ObservableInt>().Value + value > 0)
+                            profile.Properties[ProfilePropertyOpCodes.speedStatPoint].As<ObservableInt>().Value += value;
+                        else
+                        {
+                            message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                            return;
+                        }
+                    }
+                    else if (statID == 3)
+                    {
+                        if (profile.Properties[ProfilePropertyOpCodes.healthStatPoint].As<ObservableInt>().Value + value > 0)
+                            profile.Properties[ProfilePropertyOpCodes.healthStatPoint].As<ObservableInt>().Value += value;
+                        else
+                        {
+                            message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                            return;
+                        }
+                    }
+                    else if (statID == 4)
+                    {
+                        if (profile.Properties[ProfilePropertyOpCodes.fuelStatPoint].As<ObservableInt>().Value + value > 0)
+                            profile.Properties[ProfilePropertyOpCodes.fuelStatPoint].As<ObservableInt>().Value += value;
+                        else
+                        {
+                            message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                            return; 
+                        }
+                    }
+
+                    profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value += value;
+                    if(value < 0)
+                        profile.Properties[ProfilePropertyOpCodes.gold].As<ObservableInt>().Value -= Math.Abs(value) * 1000;
+
+                }
+                else
+                {
+                    message.Respond("Invalid session", ResponseStatus.Unauthorized);
+                }
+            }
+            catch (Exception e)
+            {
+                message.Respond($"Internal Server Error: {e}", ResponseStatus.Error);
             }
         }
 

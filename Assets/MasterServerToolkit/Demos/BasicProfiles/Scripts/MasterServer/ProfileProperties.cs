@@ -22,6 +22,16 @@ namespace MasterServerToolkit.Examples.BasicProfile
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.playerLevel));
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.playerExp));
             profile.Add(new ObservableInt(ProfilePropertyOpCodes.needExp));
+
+
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.usedStatPoint));
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.damageStatPoint));
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.speedStatPoint));
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.healthStatPoint));
+            profile.Add(new ObservableInt(ProfilePropertyOpCodes.fuelStatPoint));
+
+
+
         }
     }
 }

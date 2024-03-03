@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using MasterServerToolkit.MasterServer;
+using Mirror;
 using SL.Wait;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +23,17 @@ namespace Complete
         [SyncVar(hook = nameof(SetHealthUI))] public float m_CurrentHealth;                      
         [SyncVar] public bool m_Dead;
 
+        public float damagePowerPercent = 0f;
+
         public Player myPlayer;
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            m_StartingHealth += myPlayer.roomPlayer.Profile.Get<ObservableInt>(ProfilePropertyOpCodes.healthStatPoint).Value * 10;
+            damagePowerPercent += myPlayer.roomPlayer.Profile.Get<ObservableInt>(ProfilePropertyOpCodes.damageStatPoint).Value * 2f;
+            m_CurrentHealth = m_StartingHealth;
+        }
 
         private void Awake ()
         {
@@ -64,6 +75,8 @@ namespace Complete
         [Server]
         public void TakeDamage (float amount,uint killerPlayer)
         {
+            amount += amount * (damagePowerPercent / 100);
+
             // Reduce current health by the amount of damage done.
             m_CurrentHealth -= amount;
 
@@ -82,10 +95,13 @@ namespace Complete
         }
 
         [Server]
-        public void OnDeath(uint killerPlayer)
+        public void OnDeath(uint killerPlayerID)
         {
-            myPlayer.OnDeath.Invoke(netId, killerPlayer);
-            RpcOnDeath(killerPlayer);
+            Player killerPlayer = NetworkServer.spawned[killerPlayerID].GetComponent<Player>();
+            killerPlayer.AddPoint(100);
+
+            myPlayer.OnDeath.Invoke(netId, killerPlayerID);
+            RpcOnDeath(killerPlayerID);
         }
 
         private void SetHealthUI (float oldHealt, float newHealt)
@@ -116,7 +132,7 @@ namespace Complete
             myPlayer.SetVisable(false);
 
             Player player1 = NetworkClient.spawned[firePlayerID].GetComponent<Player>();
-            myPlayer.playerUI.AddPlayerMiniUI(player1, myPlayer);
+            myPlayer.gameUI.AddPlayerMiniUI(player1, myPlayer);
             
         }
     }

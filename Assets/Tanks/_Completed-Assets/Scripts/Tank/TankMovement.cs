@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using MasterServerToolkit.MasterServer;
+using Mirror;
 using Mirror.Examples.Basic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -40,13 +41,25 @@ namespace Complete
         {
             m_Rigidbody = GetComponent<Rigidbody> ();
             m_Player = GetComponent<Player> ();
-            m_Player.playerUI = GameObject.FindObjectOfType<GameUI>();
+        }
 
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            m_Speed += m_Player.roomPlayer.Profile.Get<ObservableInt>(ProfilePropertyOpCodes.speedStatPoint).Value * 0.3f;
+            m_Max_Fuel += m_Player.roomPlayer.Profile.Get<ObservableInt>(ProfilePropertyOpCodes.fuelStatPoint).Value * 10f;
+
+            m_Fuel = m_Max_Fuel;
         }
         public void FuelSet(float oldValue,float nextValue)
         {
-            if(isLocalPlayer)
-                m_Player.playerUI.playerFuelSlider.value = nextValue;
+            if (isLocalPlayer)
+            {
+                m_Player.gameUI.playerFuelSlider.value = nextValue;
+                m_Player.gameUI.playerFuelTxt.text = nextValue.ToString("N0") + "/" + m_Max_Fuel;
+            }
+                
         }
 
         public override void OnStartLocalPlayer()
@@ -57,7 +70,7 @@ namespace Complete
                 return;
 
             
-            m_Player.playerUI.playerFuelSlider.maxValue = m_Max_Fuel;
+            m_Player.gameUI.playerFuelSlider.maxValue = m_Max_Fuel;
 
             FuelSet(m_Fuel, m_Fuel);
         }
@@ -105,6 +118,7 @@ namespace Complete
             m_OriginalPitch = m_MovementAudio.pitch;
         }
 
+        public float sec = 0;
 
         public void Update ()
         {
@@ -115,6 +129,13 @@ namespace Complete
 
                 if (m_MovementInputValue != 0 && m_Fuel > 0)
                     Move();
+                else
+                {
+                    if(clientMoveActive)
+                        CmdStartMove(false);
+                    clientMoveActive = false;
+                }
+                    
 
                 if (m_TurnInputValue != 0)
                     Turn();
@@ -123,7 +144,29 @@ namespace Complete
             }
 
             if(isServer && !m_Player.health.m_Dead)
+            {
                 SetFuel(reduceFuelPerSecond);
+
+                if (serverMoveActive)
+                {
+                    SetFuel(reduceMoveFuelPerSecond);
+                    sec += Time.deltaTime;
+                    if (sec >= 1)
+                    {
+                        m_Player.AddPoint(1);
+                        sec = 0;
+                    }
+                }
+            }
+                
+        }
+
+        public bool clientMoveActive;
+        public bool serverMoveActive;
+        [Command]
+        public void CmdStartMove(bool moveActive)
+        {
+            serverMoveActive = moveActive;
         }
 
         public void SetFuel(float addFuel)
@@ -188,8 +231,14 @@ namespace Complete
             // Bu hareketi transform'un pozisyonuna uygula.
             transform.position += movement;
 
-            if(isServer)
-                SetFuel(reduceMoveFuelPerSecond);
+            if(!clientMoveActive)
+                CmdStartMove(true);
+
+            clientMoveActive = true;
+            
+
+            
+                
         }
 
         private void Turn()
