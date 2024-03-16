@@ -1,10 +1,12 @@
 using Mirror;
+using TMPro;
 using UnityEngine;
 
 namespace Complete
 {
     public class ShellExplosion : NetworkBehaviour
     {
+        [SerializeField]
         public LayerMask m_TankMask;                        // Used to filter what the explosion affects, this should be set to "Players".
         public ParticleSystem m_ExplosionParticles;         // Reference to the particles that will play on explosion.
         public AudioSource m_ExplosionAudio;                // Reference to the audio that will play on explosion.
@@ -40,10 +42,13 @@ namespace Complete
             for (int i = 0; i < colliders.Length; i++)
             {
                 // ... and find their rigidbody.
-                Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody> ();
+                Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
 
                 // If they don't have a rigidbody, go on to the next collider.
                 if (!targetRigidbody)
+                    continue;
+
+                if (targetRigidbody.transform == transform)
                     continue;
 
                 // Add an explosion force.

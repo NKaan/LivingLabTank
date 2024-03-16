@@ -1,0 +1,16 @@
+<linker>
+ <assembly fullname="SIDGIN.Patcher.Core">
+    <type fullname="SIDGIN.Patcher.Common.Version" preserve="all"/>
+    <type fullname="SIDGIN.Patcher.Common.VersionData" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Common.HashFileInfo" preserve="all"/>
+    <type fullname="SIDGIN.Patcher.Common.VersionMeta" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Common.VersionList" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Common.VersionDataLocal" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Common.FileEntry" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Common.EntryType" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Common.PatchEntry" preserve="all"/>
+    <type fullname="SIDGIN.Patcher.Storages.StorageSettings" preserve="all"/>
+	<type fullname="SIDGIN.Patcher.Storages.Http.HttpSettings" preserve="all"/>
+    <type fullname="SIDGIN.Patcher.Client.ClientSettings" preserve="all"/>
+ </assembly>
+</linker>

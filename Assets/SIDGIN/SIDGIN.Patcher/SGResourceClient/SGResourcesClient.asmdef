@@ -1,0 +1,15 @@
+{
+    "name": "SGResourcesClient",
+    "references": [
+        "SIDGIN.Patcher.Unity",
+        "SIDGIN.Patcher.Unity.Editors"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

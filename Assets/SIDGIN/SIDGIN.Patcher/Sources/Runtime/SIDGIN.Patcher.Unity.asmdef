@@ -1,0 +1,17 @@
+{
+    "name": "SIDGIN.Patcher.Unity",
+    "rootNamespace": "",
+    "references": [
+        "SIDGIN.Patcher.Zip",
+        "SIDGIN.Common"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

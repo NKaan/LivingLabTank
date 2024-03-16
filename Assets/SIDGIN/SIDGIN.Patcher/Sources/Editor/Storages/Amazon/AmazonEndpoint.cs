@@ -1,0 +1,31 @@
+﻿namespace SIDGIN.Patcher.Editors.Storages
+{
+    public enum AmazonEndpoint
+    {
+        USEast1,
+        AFSouth1,
+        MESouth1,
+        CACentral1,
+        CNNorthWest1,
+        CNNorth1,
+        USGovCloudWest1,
+        USGovCloudEast1,
+        APSoutheast2,
+        APSoutheast1,
+        APSouth1,
+        APNortheast3,
+        SAEast1,
+        APNortheast1,
+        APNortheast2,
+        USWest1,
+        USWest2,
+        EUNorth1,
+        EUWest1,
+        USEast2,
+        EUWest3,
+        EUCentral1,
+        EUSouth1,
+        APEast1,
+        EUWest2,
+    }
+}

@@ -115,9 +115,6 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 return;
             }
 
-            if (profileLoader.Profile.Properties[ProfilePropertyOpCodes.gold].As<ObservableInt>().Value < Math.Abs(addPoint) * 1000)
-                return;
-
             if (statID == 1)
             {
                 if (profileLoader.Profile.Properties[ProfilePropertyOpCodes.damageStatPoint].As<ObservableInt>().Value + addPoint < 0)

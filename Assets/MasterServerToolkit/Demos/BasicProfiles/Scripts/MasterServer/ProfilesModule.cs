@@ -127,13 +127,9 @@ namespace MasterServerToolkit.Examples.BasicProfile
                 if (profilesList.TryGetValue(userExtension.UserId, out ObservableServerProfile profile))
                 {
 
-                    if(profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value + value > profile.Properties[ProfilePropertyOpCodes.playerLevel].As<ObservableInt>().Value)
-                    {
-                        message.Respond("Invalid session", ResponseStatus.Unauthorized);
-                        return;
-                    }
+                    Debug.Log("profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value");
 
-                    if (profile.Properties[ProfilePropertyOpCodes.gold].As<ObservableInt>().Value < Math.Abs(value) * 1000)
+                    if(profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value + value > profile.Properties[ProfilePropertyOpCodes.playerLevel].As<ObservableInt>().Value)
                     {
                         message.Respond("Invalid session", ResponseStatus.Unauthorized);
                         return;
@@ -181,6 +177,9 @@ namespace MasterServerToolkit.Examples.BasicProfile
                     }
 
                     profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value += value;
+
+                    Debug.Log("profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value " + profile.Properties[ProfilePropertyOpCodes.usedStatPoint].As<ObservableInt>().Value);
+
                     if(value < 0)
                         profile.Properties[ProfilePropertyOpCodes.gold].As<ObservableInt>().Value -= Math.Abs(value) * 1000;
 

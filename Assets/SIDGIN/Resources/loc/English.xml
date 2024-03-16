@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-16"?>
+<LocalizeSheet xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <localizeKeys>
+    <LocalizeKey>
+      <Key>Check_updates</Key>
+      <Value>Check updates...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Check_integrity</Key>
+      <Value>Check integrity...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>No_updates_required</Key>
+      <Value>No updates required.</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Update_done</Key>
+      <Value>Update done.</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Starting_download_update</Key>
+      <Value>Starting download update...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Downloading_file</Key>
+      <Value>Downloading file - {0} - {1}...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Downloading_file2</Key>
+      <Value>Downloading file - {0}...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Check_file</Key>
+      <Value>Check file {0}...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Сheck_complete</Key>
+      <Value>Сheck complete.</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Reading</Key>
+      <Value>Reading...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Read</Key>
+      <Value>Read...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Extract</Key>
+      <Value>Extract {0}...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Extract_completed</Key>
+      <Value>Extract completed.</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Process_file</Key>
+      <Value>Process file {0}...</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Patch_done</Key>
+      <Value>Patch done.</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>No_permissions</Key>
+      <Value>No permissions. Please run this program as an administrator.</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Unable_get_versions</Key>
+      <Value>Unable to get versions data!</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Unable_connect_server</Key>
+      <Value>Unable to connect to server, check internet connection.
+Error Code: 101</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Unable_load_resource</Key>
+      <Value>Unable to load resource {0}.
+Error Code: {1}</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>Error_during_update</Key>
+      <Value>Error during program update!</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>File_hashes_dont_match</Key>
+      <Value>File hashes do not match. Hash old:{0}. Entry hash old:{1}</Value>
+    </LocalizeKey>
+    <LocalizeKey>
+      <Key>File_doesnt_match_hash_server</Key>
+      <Value>File hashes do not match. Hash old:{0}. Entry hash old:{1}</Value>
+    </LocalizeKey>
+  </localizeKeys>
+</LocalizeSheet>

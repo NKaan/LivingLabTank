@@ -69,12 +69,25 @@ public class Player : NetworkBehaviour
             playerPoint = 0;
         });
 
+        transform.gameObject.layer = LayerMask.NameToLayer("Enemy");
+
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
         gameUI.AddPlayerRankMiniUI(this);
+
+        if (!isLocalPlayer)
+        {
+            transform.gameObject.layer = LayerMask.NameToLayer("Enemy");
+        }
+    }
+
+    [Command]
+    public void CmdSetEnemyLayer()
+    {
+        transform.gameObject.layer = LayerMask.NameToLayer("Enemy");
     }
 
     public override void OnStopClient()

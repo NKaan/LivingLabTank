@@ -1,0 +1,21 @@
+{
+    "name": "SIDGIN.Patcher.Unity.Editors",
+    "rootNamespace": "",
+    "references": [
+        "SIDGIN.Patcher.Unity",
+        "SIDGIN.Patcher.Zip",
+        "SIDGIN.Common.Editors",
+        "SIDGIN.Common"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

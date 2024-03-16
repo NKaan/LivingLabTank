@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48e4e6366d3784be2a86d391f4783ae4, type: 3}
+  m_Name: SettingsData
+  m_EditorClassIdentifier: 
+  selectedDefinition: LivingLabTank
+  selectedStorageModule: Google
+  offlineMode: 0
+  zipCompressLevel: 9
+  definitions:
+  - name: LivingLab
+    storageName: Http
+    toDeleteFromCacheVersion: 
+    versionsFileId: 15rxcmcmtZhjXHnF5WnwSZaEk2h9X7ige
+  - name: LivingLabTank
+    storageName: Google
+    toDeleteFromCacheVersion: 
+    versionsFileId: 1GrXN0TSzZH6XX7iwrQqx2-_JsAYYdvc0
+  patchTask:
+    needPatch: 0
+    version: 
+    notes: 
+    isInitial: 0

@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3437e485c2ef4b34bc6a9873cb72000, type: 3}
+  m_Name: BuildSettingsCacheData
+  m_EditorClassIdentifier: 
+  settingsByDefinition:
+  - definitionName: Patch
+    gameResourcesFolderPath: 
+    scenesFolderPath: 
+    buildTarget: 19
+    compressType: 1
+    scenes:
+    - index: 0
+      enabled: 1
+      name: Loader
+      path: Assets/SIDGIN/SIDGIN.Patcher/Demo/Scenes/Loader.unity
+      sharedResourcesKey: None
+      packageName: First
+    - index: 1
+      enabled: 1
+      name: Client
+      path: Assets/LivingLab/Scenes/Client.unity
+      sharedResourcesKey: None
+      packageName: First
+    - index: 2
+      enabled: 1
+      name: Zone1
+      path: Assets/LivingLab/Scenes/Rooms/Zone1.unity
+      sharedResourcesKey: None
+      packageName: First
+    - index: 3
+      enabled: 1
+      name: Zone2
+      path: Assets/LivingLab/Scenes/Rooms/Zone2.unity
+      sharedResourcesKey: None
+      packageName: First
+    - index: 4
+      enabled: 1
+      name: Zone3
+      path: Assets/LivingLab/Scenes/Rooms/Zone3.unity
+      sharedResourcesKey: None
+      packageName: First
+    sharedFolders: []
+    sgResources: []
+    sgResourcePackage: []
+    packages:
+    - Main
+    - First
+  - definitionName: LivingLab
+    gameResourcesFolderPath: 
+    scenesFolderPath: 
+    buildTarget: 0
+    compressType: 1
+    scenes: []
+    sharedFolders: []
+    sgResources: []
+    sgResourcePackage: []
+    packages:
+    - Main
+  - definitionName: LivingLabTank
+    gameResourcesFolderPath: 
+    scenesFolderPath: 
+    buildTarget: 19
+    compressType: 1
+    scenes:
+    - index: 0
+      enabled: 1
+      name: Client
+      path: Assets/LivingLab/Scenes/Client.unity
+      sharedResourcesKey: None
+      packageName: Main
+    - index: 1
+      enabled: 1
+      name: Zone1
+      path: Assets/LivingLab/Scenes/Rooms/Zone1.unity
+      sharedResourcesKey: None
+      packageName: Main
+    - index: 2
+      enabled: 1
+      name: Zone2
+      path: Assets/LivingLab/Scenes/Rooms/Zone2.unity
+      sharedResourcesKey: None
+      packageName: Main
+    - index: 3
+      enabled: 1
+      name: Zone3
+      path: Assets/LivingLab/Scenes/Rooms/Zone3.unity
+      sharedResourcesKey: None
+      packageName: Main
+    sharedFolders:
+    - name: shared_0
+      path: Assets/Resources
+    sgResources: []
+    sgResourcePackage: []
+    packages:
+    - Main
